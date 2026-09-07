@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -12,12 +13,6 @@ using System.Runtime.Versioning;
 [assembly: AssemblyProduct("网页浏览器")]
 [assembly: AssemblyTitle("网页浏览器")]
 [assembly: AssemblyVersion("6.22.825.0")]
-
-// 应用程序默认区域性的资源控制器设置
 [assembly: NeutralResourcesLanguage("en-us")]
-
-// 设置程序集仅允许在Windows平台上可用
-[assembly: SupportedOSPlatform("windows10.0.26100.0")]
-
-// 禁用运行时封送
+[assembly: SupportedOSPlatform("windows10.0.26100")]
 [assembly: DisableRuntimeMarshalling]
