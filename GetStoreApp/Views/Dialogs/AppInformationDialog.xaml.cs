@@ -76,7 +76,7 @@ namespace GetStoreApp.Views.Dialogs
         private async void OnOpened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
             IsLoadCompleted = false;
-            if (await GetDependencyInformationListAsync([fileVersionProperty]) is List<ContentLinkInfo> dependencyInformationList)
+            if (await GetDependencyInformationListAsync([fileVersionProperty]) is List<ContentLinkInfo> dependencyInformationList && dependencyInformationList.Count > 0)
             {
                 foreach (ContentLinkInfo dependencyInformation in dependencyInformationList)
                 {

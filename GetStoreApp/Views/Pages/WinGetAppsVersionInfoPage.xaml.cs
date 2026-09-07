@@ -665,7 +665,7 @@ namespace GetStoreApp.Views.Pages
                 if (SearchApps is not null)
                 {
                     // 获取当前应用可用版本
-                    if (await GetAvailableVersionAysnc(SearchApps.CatalogPackage, false) is List<AvailableVersionModel> availableVersionList && availableVersionList.Count is not 0)
+                    if (await GetAvailableVersionAysnc(SearchApps.CatalogPackage, false) is List<AvailableVersionModel> availableVersionList && availableVersionList.Count > 0)
                     {
                         await UpdateAvailableVersionListAsync(availableVersionList);
                     }
@@ -673,7 +673,7 @@ namespace GetStoreApp.Views.Pages
                 else if (UpgradableApps is not null)
                 {
                     // 获取当前应用可用版本
-                    if (await GetAvailableVersionAysnc(SearchApps.CatalogPackage, false) is List<AvailableVersionModel> availableVersionList && availableVersionList.Count is not 0)
+                    if (await GetAvailableVersionAysnc(SearchApps.CatalogPackage, false) is List<AvailableVersionModel> availableVersionList && availableVersionList.Count > 0)
                     {
                         await UpdateAvailableVersionListAsync(availableVersionList);
                     }
@@ -972,7 +972,7 @@ namespace GetStoreApp.Views.Pages
         /// </summary>
         private async Task UpdateAvailableVersionListAsync(List<AvailableVersionModel> availableVersionList)
         {
-            if (availableVersionList is not null && availableVersionList.Count is not 0)
+            if (availableVersionList is not null && availableVersionList.Count > 0)
             {
                 foreach (AvailableVersionModel availableVersionItem in availableVersionList)
                 {
@@ -996,24 +996,26 @@ namespace GetStoreApp.Views.Pages
             {
                 try
                 {
-                    List<string> copyInformationList = [];
-                    copyInformationList.Add(string.Format("{0}\t{1}", DisplayNameString, string.IsNullOrEmpty(displayName) ? NotAvailableString : displayName));
-                    copyInformationList.Add(string.Format("{0}\t{1}", DescriptionString, string.IsNullOrEmpty(description) ? NotAvailableString : description));
-                    copyInformationList.Add(string.Format("{0}\t{1}", VersionString, string.IsNullOrEmpty(version) ? NotAvailableString : version));
-                    copyInformationList.Add(string.Format("{0}\t{1}", PackageLinkString, packageLink is not null ? packageLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", AuthorString, string.IsNullOrEmpty(author) ? NotAvailableString : author));
-                    copyInformationList.Add(string.Format("{0}\t{1}", PublisherString, string.IsNullOrEmpty(publisher) ? NotAvailableString : publisher));
-                    copyInformationList.Add(string.Format("{0}\t{1}", PublisherLinkString, publisherLink is not null ? publisherLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", PublisherSupportLinkString, publisherSupportLink is not null ? publisherSupportLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", LocaleString, string.IsNullOrEmpty(locale) ? NotAvailableString : locale));
-                    copyInformationList.Add(string.Format("{0}\t{1}", CopyRightString, string.IsNullOrEmpty(copyRight) ? NotAvailableString : copyRight));
-                    copyInformationList.Add(string.Format("{0}\t{1}", CopyRightLinkString, copyRightLink is not null ? copyRightLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", LicenseString, string.IsNullOrEmpty(license) ? NotAvailableString : license));
-                    copyInformationList.Add(string.Format("{0}\t{1}", LicenseLinkString, licenseLink is not null ? licenseLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", PrivacyLinkString, privacyLink is not null ? privacyLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", PurchaseLinkString, purchaseLink is not null ? purchaseLink.AbsoluteUri : NotAvailableString));
-                    copyInformationList.Add(string.Format("{0}\t{1}", ReleaseNotesString, string.IsNullOrEmpty(releaseNotes) ? NotAvailableString : releaseNotes));
-                    copyInformationList.Add(string.Format("{0}\t{1}", ReleaseNotesLinkString, releaseNotesLink is not null ? releaseNotesLink.AbsoluteUri : NotAvailableString));
+                    List<string> copyInformationList =
+                    [
+                        string.Format("{0}\t{1}", DisplayNameString, string.IsNullOrEmpty(displayName) ? NotAvailableString : displayName),
+                        string.Format("{0}\t{1}", DescriptionString, string.IsNullOrEmpty(description) ? NotAvailableString : description),
+                        string.Format("{0}\t{1}", VersionString, string.IsNullOrEmpty(version) ? NotAvailableString : version),
+                        string.Format("{0}\t{1}", PackageLinkString, packageLink is not null ? packageLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", AuthorString, string.IsNullOrEmpty(author) ? NotAvailableString : author),
+                        string.Format("{0}\t{1}", PublisherString, string.IsNullOrEmpty(publisher) ? NotAvailableString : publisher),
+                        string.Format("{0}\t{1}", PublisherLinkString, publisherLink is not null ? publisherLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", PublisherSupportLinkString, publisherSupportLink is not null ? publisherSupportLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", LocaleString, string.IsNullOrEmpty(locale) ? NotAvailableString : locale),
+                        string.Format("{0}\t{1}", CopyRightString, string.IsNullOrEmpty(copyRight) ? NotAvailableString : copyRight),
+                        string.Format("{0}\t{1}", CopyRightLinkString, copyRightLink is not null ? copyRightLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", LicenseString, string.IsNullOrEmpty(license) ? NotAvailableString : license),
+                        string.Format("{0}\t{1}", LicenseLinkString, licenseLink is not null ? licenseLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", PrivacyLinkString, privacyLink is not null ? privacyLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", PurchaseLinkString, purchaseLink is not null ? purchaseLink.AbsoluteUri : NotAvailableString),
+                        string.Format("{0}\t{1}", ReleaseNotesString, string.IsNullOrEmpty(releaseNotes) ? NotAvailableString : releaseNotes),
+                        string.Format("{0}\t{1}", ReleaseNotesLinkString, releaseNotesLink is not null ? releaseNotesLink.AbsoluteUri : NotAvailableString)
+                    ];
                     return string.Join(Environment.NewLine, copyInformationList);
                 }
                 catch (Exception e)

@@ -293,9 +293,7 @@ namespace GetStoreApp.Views.Pages
 
                     if (dwRmStatus is 0)
                     {
-                        List<uint> processPIDList = ProcessHelper.GetProcessPIDByName("explorer.exe");
-
-                        if (processPIDList is not null && processPIDList.Count is not 0)
+                        if (ProcessHelper.GetProcessPIDByName("explorer.exe") is List<uint> processPIDList && processPIDList.Count > 0)
                         {
                             RM_UNIQUE_PROCESS[] lpRmProcList = new RM_UNIQUE_PROCESS[processPIDList.Count];
 

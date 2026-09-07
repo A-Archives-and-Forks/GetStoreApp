@@ -106,8 +106,7 @@ namespace GetStoreApp.Views.Dialogs
 
             IsCleaning = true;
 
-            List<TraceCleanupModel> selectedItemsList = GetSelectedItemsList(TraceCleanupListView.SelectedItems);
-            if (selectedItemsList is not null && selectedItemsList.Count is not 0 && await TraceCleanupAsync(selectedItemsList) is List<(CleanKind cleanKind, bool cleanResult)> cleanSuccessfullyDict)
+            if (GetSelectedItemsList(TraceCleanupListView.SelectedItems) is List<TraceCleanupModel> selectedItemsList && selectedItemsList.Count > 0 && await TraceCleanupAsync(selectedItemsList) is List<(CleanKind cleanKind, bool cleanResult)> cleanSuccessfullyDict)
             {
                 foreach ((CleanKind cleanKind, bool cleanResult) in cleanSuccessfullyDict)
                 {

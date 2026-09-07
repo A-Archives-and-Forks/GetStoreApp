@@ -65,7 +65,7 @@ namespace GetStoreApp.Helpers.Root
             {
                 if (fileOperation is not null)
                 {
-                    if (filePathList is not null && filePathList.Count is not 0)
+                    if (filePathList is not null && filePathList.Count > 0)
                     {
                         fileOperation.SetOperationFlags(FileOperationFlags.FOF_ALLOWUNDO);
                         foreach (string filePath in filePathList)

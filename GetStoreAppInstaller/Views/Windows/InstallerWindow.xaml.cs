@@ -1135,9 +1135,7 @@ namespace GetStoreAppInstaller.Views.Windows
 
             try
             {
-                IReadOnlyList<IStorageItem> dragItemsList = await args.DataView.GetStorageItemsAsync();
-
-                if (dragItemsList.Count is 1)
+                if (await args.DataView.GetStorageItemsAsync() is IReadOnlyList<IStorageItem> dragItemsList && dragItemsList.Count is 1)
                 {
                     string extensionName = Path.GetExtension(dragItemsList[0].Name);
 
@@ -1199,20 +1197,15 @@ namespace GetStoreAppInstaller.Views.Windows
                 DataPackageView dataPackageView = args.DataView;
                 fileName = string.Empty;
 
-                if (dataPackageView.Contains(StandardDataFormats.StorageItems))
+                if (dataPackageView.Contains(StandardDataFormats.StorageItems) && await args.DataView.GetStorageItemsAsync() is IReadOnlyList<IStorageItem> dragItemsList && dragItemsList.Count > 0)
                 {
-                    IReadOnlyList<IStorageItem> dragItemsList = await args.DataView.GetStorageItemsAsync();
-
-                    if (dragItemsList.Count > 0)
+                    try
                     {
-                        try
-                        {
-                            fileName = dragItemsList[0].Path;
-                        }
-                        catch (Exception e)
-                        {
-                            LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreAppInstaller), nameof(InstallerWindow), nameof(OnDrop), 1, e);
-                        }
+                        fileName = dragItemsList[0].Path;
+                    }
+                    catch (Exception e)
+                    {
+                        LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreAppInstaller), nameof(InstallerWindow), nameof(OnDrop), 1, e);
                     }
                 }
             }
@@ -1278,14 +1271,9 @@ namespace GetStoreAppInstaller.Views.Windows
                 ShareOperation shareOperation = shareTargetActivatedEventArgs.ShareOperation;
                 shareOperation.ReportCompleted();
 
-                if (shareOperation.Data.Contains(StandardDataFormats.StorageItems))
+                if (shareOperation.Data.Contains(StandardDataFormats.StorageItems) && await shareOperation.Data.GetStorageItemsAsync() is IReadOnlyList<IStorageItem> sharedFilesList && sharedFilesList.Count > 0)
                 {
-                    IReadOnlyList<IStorageItem> sharedFilesList = await shareOperation.Data.GetStorageItemsAsync();
-
-                    if (sharedFilesList.Count > 0)
-                    {
-                        fileName = sharedFilesList[0].Path;
-                    }
+                    fileName = sharedFilesList[0].Path;
                 }
             }
 
@@ -2062,7 +2050,7 @@ namespace GetStoreAppInstaller.Views.Windows
                                         }
 
                                         // 从资源文件中查找符合的图标
-                                        if (packageManifestInformation.ScaleResourceList is not null && packageManifestInformation.ScaleResourceList.Count is not 0)
+                                        if (packageManifestInformation.ScaleResourceList is not null && packageManifestInformation.ScaleResourceList.Count > 0)
                                         {
                                             // 获取应用包图标
                                             if (!string.IsNullOrEmpty(packageInformation.Logo))
@@ -2347,7 +2335,7 @@ namespace GetStoreAppInstaller.Views.Windows
         /// <summary>
         /// 获取应用程序入口信息
         /// </summary>
-        private List<ApplicationModel> ParsePackageApplication(IAppxManifestReader3 appxManifestReader, ResourceManagement resourceManagement)
+        private List<ApplicationModel> ParsePackageApplicationList(IAppxManifestReader3 appxManifestReader, ResourceManagement resourceManagement)
         {
             List<ApplicationModel> applicationList = [];
 
@@ -2385,7 +2373,7 @@ namespace GetStoreAppInstaller.Views.Windows
         /// <summary>
         /// 解析应用包的功能
         /// </summary>
-        private List<string> ParsePackageCapability(IAppxManifestReader3 appxManifestReader)
+        private List<string> ParsePackageCapabilityList(IAppxManifestReader3 appxManifestReader)
         {
             List<string> capabilityList = [];
 
@@ -2406,7 +2394,7 @@ namespace GetStoreAppInstaller.Views.Windows
         /// <summary>
         /// 解析应用包的依赖信息
         /// </summary>
-        private List<DependencyInformation> ParsePackageDependencies(IAppxManifestReader3 appxManifestReader)
+        private List<DependencyInformation> ParsePackageDependencyList(IAppxManifestReader3 appxManifestReader)
         {
             List<DependencyInformation> dependencyList = [];
 
@@ -2454,10 +2442,10 @@ namespace GetStoreAppInstaller.Views.Windows
                 if (appxPackageReader is not null && appxPackageReader.GetManifest(out IAppxManifestReader3 appxManifestReader) is 0)
                 {
                     // 获取应用包定义的功能列表
-                    manifestInformation.CapabilitiesList = ParsePackageCapability(appxManifestReader);
+                    manifestInformation.CapabilitiesList = ParsePackageCapabilityList(appxManifestReader);
 
                     // 获取应用包定义的静态依赖项列表
-                    manifestInformation.DependencyList = ParsePackageDependencies(appxManifestReader);
+                    manifestInformation.DependencyList = ParsePackageDependencyList(appxManifestReader);
 
                     // 获取应用包定义的包标识符
                     if (appxManifestReader.GetPackageId(out IAppxManifestPackageId2 packageId) is 0)
@@ -2480,17 +2468,17 @@ namespace GetStoreAppInstaller.Views.Windows
                     }
 
                     // 获取包的目标设备系列
-                    manifestInformation.TargetDeviceFamilyList = ParsePackageTargetDeviceFamily(appxManifestReader);
+                    manifestInformation.TargetDeviceFamilyList = ParsePackageTargetDeviceFamilyList(appxManifestReader);
 
                     // 查找符合显示的语言
                     if (isBundle)
                     {
-                        manifestInformation.LanguageList = bundleLanguageList is not null && bundleLanguageList.Count is not 0 ? bundleLanguageList : [];
+                        manifestInformation.LanguageList = bundleLanguageList is not null && bundleLanguageList.Count > 0 ? bundleLanguageList : [];
                     }
                     else
                     {
                         // 获取应用包定义的语言资源
-                        manifestInformation.LanguageList = ParsePackageLanguage(appxManifestReader);
+                        manifestInformation.LanguageList = ParsePackageLanguageList(appxManifestReader);
                     }
 
                     string currentLanguage = GetSpecifiedLanguage(manifestInformation.LanguageList);
@@ -2538,7 +2526,7 @@ namespace GetStoreAppInstaller.Views.Windows
                     }
 
                     // 获取应用入口信息
-                    manifestInformation.ApplicationList = ParsePackageApplication(appxManifestReader, resourceManagement);
+                    manifestInformation.ApplicationList = ParsePackageApplicationList(appxManifestReader, resourceManagement);
 
                     // 获取应用包的属性
                     if (appxManifestReader.GetProperties(out IAppxManifestProperties packageProperties) is 0)
@@ -2595,7 +2583,7 @@ namespace GetStoreAppInstaller.Views.Windows
         /// <summary>
         /// 解析应用包定义的语言
         /// </summary>
-        private List<string> ParsePackageLanguage(IAppxManifestReader3 appxManifestReader)
+        private List<string> ParsePackageLanguageList(IAppxManifestReader3 appxManifestReader)
         {
             List<string> languageList = [];
 
@@ -2619,7 +2607,7 @@ namespace GetStoreAppInstaller.Views.Windows
         /// <summary>
         /// 获取程序包面向的设备系列信息
         /// </summary>
-        private List<TargetDeviceFamilyModel> ParsePackageTargetDeviceFamily(IAppxManifestReader3 appxManifestReader)
+        private List<TargetDeviceFamilyModel> ParsePackageTargetDeviceFamilyList(IAppxManifestReader3 appxManifestReader)
         {
             List<TargetDeviceFamilyModel> targetDeviceFamilyList = [];
 
@@ -2848,7 +2836,7 @@ namespace GetStoreAppInstaller.Views.Windows
                         applicationDict.TryAdd(architecture, fileName);
                         scaleResourceList.Add(fileName);
 
-                        if (GetPackageBundleLanguage(appxBundleManifestPackageInfo) is List<string> languageBundleList && languageBundleList.Count > 0)
+                        if (GetPackageBundleLanguageList(appxBundleManifestPackageInfo) is List<string> languageBundleList && languageBundleList.Count > 0)
                         {
                             foreach (string languageBundleItem in languageBundleList)
                             {
@@ -2887,7 +2875,7 @@ namespace GetStoreAppInstaller.Views.Windows
             Dictionary<string, IAppxFile> bundleFileDict = [];
 
             // 读取捆绑包的二进制文件
-            if (appxBundleReader is not null && scaleResourceList is not null && scaleResourceList.Count is not 0 && appxBundleReader.GetPayloadPackages(out IAppxFilesEnumerator appxFilesEnumerator) is 0)
+            if (appxBundleReader is not null && scaleResourceList is not null && scaleResourceList.Count > 0 && appxBundleReader.GetPayloadPackages(out IAppxFilesEnumerator appxFilesEnumerator) is 0)
             {
                 while (appxFilesEnumerator.GetHasCurrent(out bool hasCurrent) is 0 && hasCurrent)
                 {
@@ -3140,7 +3128,7 @@ namespace GetStoreAppInstaller.Views.Windows
         private IStream GetSpecifiedLogoStream(string logo, List<KeyValuePair<string, IAppxFile>> logoList)
         {
             IStream imageFileStream = null;
-            if (logoList is not null && logoList.Count is not 0)
+            if (logoList is not null && logoList.Count > 0)
             {
                 logoList.Sort((item1, item2) => item1.Key.CompareTo(item2.Key));
 
@@ -3215,7 +3203,7 @@ namespace GetStoreAppInstaller.Views.Windows
         /// <summary>
         /// 获取应用捆绑包定义的语言
         /// </summary>
-        private List<string> GetPackageBundleLanguage(IAppxBundleManifestPackageInfo appxBundleManifestPackageInfo)
+        private List<string> GetPackageBundleLanguageList(IAppxBundleManifestPackageInfo appxBundleManifestPackageInfo)
         {
             List<string> languageResourceList = [];
 
@@ -3340,7 +3328,7 @@ namespace GetStoreAppInstaller.Views.Windows
                 IsAppInstalled = packageInformation.IsAppInstalled;
                 IsUpdateSettingsExisted = packageInformation.IsUpdateSettingsExisted;
 
-                if (packageInformation.TargetDeviceFamilyList is not null && packageInformation.TargetDeviceFamilyList.Count is not 0)
+                if (packageInformation.TargetDeviceFamilyList is not null && packageInformation.TargetDeviceFamilyList.Count > 0)
                 {
                     foreach (TargetDeviceFamilyModel targetDeviceFamilyItem in packageInformation.TargetDeviceFamilyList)
                     {
@@ -3348,7 +3336,7 @@ namespace GetStoreAppInstaller.Views.Windows
                     }
                 }
 
-                if (packageInformation.DependencyList is not null && packageInformation.DependencyList.Count is not 0)
+                if (packageInformation.DependencyList is not null && packageInformation.DependencyList.Count > 0)
                 {
                     foreach (DependencyInformation dependencyItem in packageInformation.DependencyList)
                     {
@@ -3364,7 +3352,7 @@ namespace GetStoreAppInstaller.Views.Windows
                     }
                 }
 
-                if (packageInformation.CapabilitiesList is not null && packageInformation.CapabilitiesList.Count is not 0)
+                if (packageInformation.CapabilitiesList is not null && packageInformation.CapabilitiesList.Count > 0)
                 {
                     foreach (string capability in packageInformation.CapabilitiesList)
                     {
@@ -3387,7 +3375,7 @@ namespace GetStoreAppInstaller.Views.Windows
                     }
                 }
 
-                if (packageInformation.ApplicationList is not null && packageInformation.ApplicationList.Count is not 0)
+                if (packageInformation.ApplicationList is not null && packageInformation.ApplicationList.Count > 0)
                 {
                     foreach (ApplicationModel applicationItem in packageInformation.ApplicationList)
                     {
@@ -3395,7 +3383,7 @@ namespace GetStoreAppInstaller.Views.Windows
                     }
                 }
 
-                if (packageInformation.LanguageList is not null && packageInformation.LanguageList.Count is not 0)
+                if (packageInformation.LanguageList is not null && packageInformation.LanguageList.Count > 0)
                 {
                     foreach (string language in packageInformation.LanguageList)
                     {
@@ -3547,7 +3535,7 @@ namespace GetStoreAppInstaller.Views.Windows
                             TargetVolume = PackageVolume.GetDefault()
                         };
 
-                        if(installDependencyList.Count > 0)
+                        if (installDependencyList.Count > 0)
                         {
                             foreach (InstallDependencyModel installDependencyItem in installDependencyList)
                             {
@@ -3669,9 +3657,7 @@ namespace GetStoreAppInstaller.Views.Windows
                 {
                     if (string.Equals(package.Id.FamilyName, packageFamilyName))
                     {
-                        IReadOnlyList<AppListEntry> appListEntryList = package.GetAppListEntries();
-
-                        if (appListEntryList.Count > 0)
+                        if (package.GetAppListEntries() is IReadOnlyList<AppListEntry> appListEntryList && appListEntryList.Count > 0)
                         {
                             await appListEntryList[0].LaunchAsync();
                             break;

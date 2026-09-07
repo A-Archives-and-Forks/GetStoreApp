@@ -281,20 +281,21 @@ namespace GetStoreApp.Helpers.Store
                     fileListDocument.LoadXml(fileListXml);
 
                     Dictionary<string, (string extension, string size, string digest)> appxPackagesInfoDict = [];
-                    XmlNodeList fileList = fileListDocument.GetElementsByTagName("File");
-
-                    foreach (IXmlNode fileNode in fileList)
+                    if (fileListDocument.GetElementsByTagName("File") is XmlNodeList fileList && fileList.Count > 0)
                     {
-                        if (fileNode.Attributes.GetNamedItem("InstallerSpecificIdentifier") is IXmlNode installerSpecificIdentifierNode)
+                        foreach (IXmlNode fileNode in fileList)
                         {
-                            string name = installerSpecificIdentifierNode.InnerText;
-                            string extension = fileNode.Attributes.GetNamedItem("FileName").InnerText[fileNode.Attributes.GetNamedItem("FileName").InnerText.LastIndexOf('.')..];
-                            string size = fileNode.Attributes.GetNamedItem("Size").InnerText;
-                            string digest = fileNode.Attributes.GetNamedItem("Digest").InnerText;
-
-                            if (!appxPackagesInfoDict.ContainsKey(name))
+                            if (fileNode.Attributes.GetNamedItem("InstallerSpecificIdentifier") is IXmlNode installerSpecificIdentifierNode)
                             {
-                                appxPackagesInfoDict.Add(name, ValueTuple.Create(extension, size, digest));
+                                string name = installerSpecificIdentifierNode.InnerText;
+                                string extension = fileNode.Attributes.GetNamedItem("FileName").InnerText[fileNode.Attributes.GetNamedItem("FileName").InnerText.LastIndexOf('.')..];
+                                string size = fileNode.Attributes.GetNamedItem("Size").InnerText;
+                                string digest = fileNode.Attributes.GetNamedItem("Digest").InnerText;
+
+                                if (!appxPackagesInfoDict.ContainsKey(name))
+                                {
+                                    appxPackagesInfoDict.Add(name, ValueTuple.Create(extension, size, digest));
+                                }
                             }
                         }
                     }

@@ -121,31 +121,33 @@ namespace GetStoreApp.Services.Download
         /// 获取已下载完成任务数据，为保证安全访问，需要手动对访问的锁进行加锁和释放
         /// </summary>
         [DynamicWindowsRuntimeCast(typeof(Windows.Storage.ApplicationDataCompositeValue))]
-        internal static List<DownloadSchedulerModel> GetDownloadData()
+        internal static List<DownloadSchedulerModel> GetDownloadDataList()
         {
             List<DownloadSchedulerModel> downloadSchedulerList = [];
 
-            if (downloadStorageContainer is not null)
+            if (downloadStorageContainer is null)
             {
-                foreach (KeyValuePair<string, object> downloadStorageItem in downloadStorageContainer.Values)
+                return downloadSchedulerList;
+            }
+
+            foreach (KeyValuePair<string, object> downloadStorageItem in downloadStorageContainer.Values)
+            {
+                try
                 {
-                    try
+                    if (downloadStorageItem.Value is Windows.Storage.ApplicationDataCompositeValue compositeValue)
                     {
-                        if (downloadStorageItem.Value is Windows.Storage.ApplicationDataCompositeValue compositeValue)
+                        downloadSchedulerList.Add(new()
                         {
-                            downloadSchedulerList.Add(new()
-                            {
-                                DownloadKey = downloadStorageItem.Key,
-                                FileName = Convert.ToString(compositeValue[FileName]),
-                                FilePath = Convert.ToString(compositeValue[FilePath]),
-                                TotalSize = Convert.ToDouble(compositeValue[FileSize])
-                            });
-                        }
+                            DownloadKey = downloadStorageItem.Key,
+                            FileName = Convert.ToString(compositeValue[FileName]),
+                            FilePath = Convert.ToString(compositeValue[FilePath]),
+                            TotalSize = Convert.ToDouble(compositeValue[FileSize])
+                        });
                     }
-                    catch (Exception e)
-                    {
-                        LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(GetDownloadData), 1, e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(GetDownloadDataList), 1, e);
                 }
             }
 
@@ -159,23 +161,25 @@ namespace GetStoreApp.Services.Download
         {
             bool result = false;
 
-            if (downloadStorageContainer is not null)
+            if (downloadStorageContainer is null)
             {
-                DownloadStorageSemaphoreSlim?.Wait();
-
-                try
-                {
-                    downloadStorageContainer.Values.Clear();
-                    StorageDataCleared?.Invoke();
-                    result = true;
-                }
-                catch (Exception e)
-                {
-                    LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(ClearDownloadData), 1, e);
-                }
-
-                DownloadStorageSemaphoreSlim?.Release();
+                return result;
             }
+
+            DownloadStorageSemaphoreSlim?.Wait();
+
+            try
+            {
+                downloadStorageContainer.Values.Clear();
+                StorageDataCleared?.Invoke();
+                result = true;
+            }
+            catch (Exception e)
+            {
+                LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(ClearDownloadData), 1, e);
+            }
+
+            DownloadStorageSemaphoreSlim?.Release();
             return result;
         }
     }

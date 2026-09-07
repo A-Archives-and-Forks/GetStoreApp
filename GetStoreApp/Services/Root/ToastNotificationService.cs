@@ -75,7 +75,7 @@ namespace GetStoreApp.Services.Root
                 {
                     AppLaunchKind = AppLaunchKind.ToastNotification,
                     IsLaunched = isLaunched,
-                    SubParameters = ["OpenApp"]
+                    SubParameterList = ["OpenApp"]
                 };
 
                 DesktopLaunchService.SignalAppLaunchActivated(appLaunchArguments);
@@ -86,7 +86,7 @@ namespace GetStoreApp.Services.Root
                 {
                     AppLaunchKind = AppLaunchKind.ToastNotification,
                     IsLaunched = isLaunched,
-                    SubParameters = ["ViewDownloadPage"]
+                    SubParameterList = ["ViewDownloadPage"]
                 };
 
                 DesktopLaunchService.SignalAppLaunchActivated(appLaunchArguments);

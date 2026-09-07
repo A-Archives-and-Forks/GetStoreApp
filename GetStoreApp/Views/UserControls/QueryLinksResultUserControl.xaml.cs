@@ -520,7 +520,7 @@ namespace GetStoreApp.Views.UserControls
                         downloadSchedulerList.AddRange(DownloadSchedulerService.DownloadFailedList);
                     }
 
-                    downloadSchedulerList.AddRange(DownloadStorageService.GetDownloadData());
+                    downloadSchedulerList.AddRange(DownloadStorageService.GetDownloadDataList());
                 }
                 catch (Exception e)
                 {
@@ -636,7 +636,7 @@ namespace GetStoreApp.Views.UserControls
                         downloadSchedulerList.AddRange(DownloadSchedulerService.DownloadFailedList);
                     }
 
-                    downloadSchedulerList.AddRange(DownloadStorageService.GetDownloadData());
+                    downloadSchedulerList.AddRange(DownloadStorageService.GetDownloadDataList());
                 }
                 catch (Exception e)
                 {
@@ -768,12 +768,13 @@ namespace GetStoreApp.Views.UserControls
 
             return await Task.Run(() =>
             {
-                List<string> appInformationCopyStringList = [];
-                appInformationCopyStringList.Add(QueriedAppNameString + AppInfo.Name);
-                appInformationCopyStringList.Add(QueriedAppPublisherString + AppInfo.Publisher);
-                appInformationCopyStringList.Add(QueriedAppDescriptionString);
-                appInformationCopyStringList.Add(AppInfo.Description);
-
+                List<string> appInformationCopyStringList =
+                [
+                    QueriedAppNameString + AppInfo.Name,
+                    QueriedAppPublisherString + AppInfo.Publisher,
+                    QueriedAppDescriptionString,
+                    AppInfo.Description
+                ];
                 return string.Join(Environment.NewLine, appInformationCopyStringList);
             });
         }

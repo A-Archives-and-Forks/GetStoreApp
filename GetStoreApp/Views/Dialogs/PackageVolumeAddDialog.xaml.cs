@@ -352,13 +352,7 @@ namespace GetStoreApp.Views.Dialogs
             if (PackageVolumeResultKind is not PackageVolumeResultKind.Loading)
             {
                 PackageVolumeResultKind = PackageVolumeResultKind.Loading;
-                List<PackageVolumeModel> packageVolumeList = await GetPackageVolumeListAsync();
-
-                if (packageVolumeList is null || packageVolumeList.Count is 0)
-                {
-                    PackageVolumeResultKind = PackageVolumeResultKind.Failed;
-                }
-                else
+                if (await GetPackageVolumeListAsync() is List<PackageVolumeModel> packageVolumeList && packageVolumeList.Count > 0)
                 {
                     PackageVolumeCollection.Clear();
                     foreach (PackageVolumeModel packageVolumeItem in packageVolumeList)
@@ -367,6 +361,10 @@ namespace GetStoreApp.Views.Dialogs
                     }
 
                     PackageVolumeResultKind = PackageVolumeResultKind.Successfully;
+                }
+                else
+                {
+                    PackageVolumeResultKind = PackageVolumeResultKind.Failed;
                 }
             }
         }

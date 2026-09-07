@@ -459,9 +459,9 @@ namespace GetStoreApp.Views.Pages
 
                 try
                 {
-                    IReadOnlyList<AppListEntry> appEntries = await Package.Current.GetAppListEntriesAsync();
+                    IReadOnlyList<AppListEntry> appEntryList = await Package.Current.GetAppListEntriesAsync();
 
-                    if (appEntries[0] is AppListEntry defaultEntry)
+                    if (appEntryList[0] is AppListEntry defaultEntry)
                     {
                         StartScreenManager startScreenManager = StartScreenManager.GetDefault();
 

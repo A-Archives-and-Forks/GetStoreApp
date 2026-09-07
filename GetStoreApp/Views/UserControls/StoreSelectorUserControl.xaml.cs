@@ -707,15 +707,24 @@ namespace GetStoreApp.Views.UserControls
                 isInitialized = true;
                 storePage = storePageData;
 
-                List<HistoryModel> queryLinksHistoryList = await Task.Run(HistoryStorageService.GetQueryLinksData);
-
                 QueryLinksHistoryCollection.Clear();
 
-                foreach (HistoryModel historyItem in queryLinksHistoryList)
+                if (await Task.Run(HistoryStorageService.GetQueryLinksDataList) is List<HistoryModel> queryLinksHistoryList)
                 {
-                    historyItem.HistoryTypeName = TypeList.Find(item => string.Equals(item.InternalName, historyItem.HistoryType, StringComparison.OrdinalIgnoreCase)) is TypeModel typeItem ? typeItem.DisplayName : string.Empty;
-                    historyItem.HistoryChannelName = ChannelList.Find(item => string.Equals(item.InternalName, historyItem.HistoryChannel, StringComparison.OrdinalIgnoreCase)) is ChannelModel channelItem ? channelItem.DisplayName : string.Empty;
-                    QueryLinksHistoryCollection.Add(historyItem);
+                    foreach (HistoryModel historyItem in queryLinksHistoryList)
+                    {
+                        historyItem.HistoryTypeName = TypeList.Find(item => string.Equals(item.InternalName, historyItem.HistoryType, StringComparison.OrdinalIgnoreCase)) is TypeModel typeItem ? typeItem.DisplayName : string.Empty;
+                        historyItem.HistoryChannelName = ChannelList.Find(item => string.Equals(item.InternalName, historyItem.HistoryChannel, StringComparison.OrdinalIgnoreCase)) is ChannelModel channelItem ? channelItem.DisplayName : string.Empty;
+                        QueryLinksHistoryCollection.Add(historyItem);
+                    }
+                }
+
+                if (await Task.Run(HistoryStorageService.GetSearchAppsDataList) is List<HistoryModel> searchAppsHistoryList)
+                {
+                    foreach (HistoryModel historyItem in searchAppsHistoryList)
+                    {
+                        SearchAppsHistoryCollection.Add(historyItem);
+                    }
                 }
 
                 HistoryStorageService.QueryLinksCleared += () =>
@@ -788,7 +797,7 @@ namespace GetStoreApp.Views.UserControls
                     if (requestResult)
                     {
                         // 获取成功
-                        if (queryLinksResultList is not null && queryLinksResultList.Count is not 0)
+                        if (queryLinksResultList is not null && queryLinksResultList.Count > 0)
                         {
                             UpdateQueryLinksResultHistory(appInfoItem.Name, typeIndex, channelIndex, link);
                             IsQueryLinksResultVisible = true;
@@ -879,7 +888,10 @@ namespace GetStoreApp.Views.UserControls
                         if (string.IsNullOrEmpty(appInformationResult.appInfo.CategoryID))
                         {
                             queryLinksResult.isPackagedApp = false;
-                            queryLinksResultList.AddRange(await QueryLinksHelper.GetNonAppxPackagesAsync(productId));
+                            if (await QueryLinksHelper.GetNonAppxPackagesAsync(productId) is List<QueryLinksResultModel> nonAppxPackagesList && nonAppxPackagesList.Count > 0)
+                            {
+                                queryLinksResultList.AddRange(nonAppxPackagesList);
+                            }
                         }
                         // 解析商店应用数据
                         else
@@ -887,9 +899,8 @@ namespace GetStoreApp.Views.UserControls
                             queryLinksResult.isPackagedApp = true;
                             string fileListXml = await QueryLinksHelper.GetFileListXmlAsync(cookie, appInformationResult.appInfo.CategoryID, channelInternalName);
 
-                            if (!string.IsNullOrEmpty(fileListXml))
+                            if (!string.IsNullOrEmpty(fileListXml) && await QueryLinksHelper.GetAppxPackagesAsync(fileListXml, channelInternalName) is List<QueryLinksResultModel> appxPackagesList && appxPackagesList.Count > 0)
                             {
-                                List<QueryLinksResultModel> appxPackagesList = await QueryLinksHelper.GetAppxPackagesAsync(fileListXml, channelInternalName);
                                 foreach (QueryLinksResultModel appxPackage in appxPackagesList)
                                 {
                                     bool isExisted = false;
@@ -968,13 +979,15 @@ namespace GetStoreApp.Views.UserControls
                         {
                             queryLinksResult.categoryId = UnknownString;
                             queryLinksResult.isPackagedApp = false;
-                            List<QueryLinksResultModel> nonPackagedAppsList = HtmlParseHelper.HtmlParseNonPackagedAppLinks();
-                            queryLinksResultList.AddRange(HtmlParseHelper.HtmlParseNonPackagedAppLinks());
+                            if (HtmlParseHelper.HtmlParseNonPackagedAppLinkList() is List<QueryLinksResultModel> nonPackagedAppsList && nonPackagedAppsList.Count > 0)
+                            {
+                                queryLinksResultList.AddRange(nonPackagedAppsList);
+                            }
                         }
                         else
                         {
                             queryLinksResult.isPackagedApp = true;
-                            List<QueryLinksResultModel> packagedAppsList = HtmlParseHelper.HtmlParsePackagedAppLinks();
+                            List<QueryLinksResultModel> packagedAppsList = HtmlParseHelper.HtmlParsePackagedAppLinkList();
 
                             // 按设置选项设置的内容过滤列表
                             if (LinkFilterService.EncryptedPackageFilter)

@@ -1079,7 +1079,7 @@ namespace GetStoreApp.Views.Windows
             if (appLaunchArguments.AppLaunchKind is AppLaunchKind.Launch)
             {
                 // 应用已经启动
-                if (!isFirstLaunch && appLaunchArguments.IsLaunched && !(appLaunchArguments.SubParameters is not null && appLaunchArguments.SubParameters.Count > 0 && appLaunchArguments.SubParameters[0] is "Restart"))
+                if (!isFirstLaunch && appLaunchArguments.IsLaunched && !(appLaunchArguments.SubParameterList is not null && appLaunchArguments.SubParameterList.Count > 0 && appLaunchArguments.SubParameterList[0] is "Restart"))
                 {
                     await ShowDialogAsync(new AppRunningDialog());
                 }
@@ -1087,29 +1087,29 @@ namespace GetStoreApp.Views.Windows
             // 从跳转列表处启动
             else if (appLaunchArguments.AppLaunchKind is AppLaunchKind.JumpList)
             {
-                if (appLaunchArguments.SubParameters is not null && appLaunchArguments.SubParameters.Count >= 1)
+                if (appLaunchArguments.SubParameterList is not null && appLaunchArguments.SubParameterList.Count >= 1)
                 {
-                    if (appLaunchArguments.SubParameters[0] is "Home" && GetFrameContent() is not HomePage)
+                    if (appLaunchArguments.SubParameterList[0] is "Home" && GetFrameContent() is not HomePage)
                     {
                         NavigateTo(typeof(HomePage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "Store" && GetFrameContent() is not StorePage)
+                    else if (appLaunchArguments.SubParameterList[0] is "Store" && GetFrameContent() is not StorePage)
                     {
                         NavigateTo(typeof(StorePage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "AppUpdate" && GetFrameContent() is not AppUpdatePage)
+                    else if (appLaunchArguments.SubParameterList[0] is "AppUpdate" && GetFrameContent() is not AppUpdatePage)
                     {
                         NavigateTo(typeof(AppUpdatePage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "WinGet" && GetFrameContent() is not WinGetPage)
+                    else if (appLaunchArguments.SubParameterList[0] is "WinGet" && GetFrameContent() is not WinGetPage)
                     {
                         NavigateTo(typeof(WinGetPage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "AppManager" && GetFrameContent() is not AppManagerPage)
+                    else if (appLaunchArguments.SubParameterList[0] is "AppManager" && GetFrameContent() is not AppManagerPage)
                     {
                         NavigateTo(typeof(AppManagerPage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "Download" && GetFrameContent() is not DownloadPage)
+                    else if (appLaunchArguments.SubParameterList[0] is "Download" && GetFrameContent() is not DownloadPage)
                     {
                         NavigateTo(typeof(DownloadPage));
                     }
@@ -1118,29 +1118,29 @@ namespace GetStoreApp.Views.Windows
             // 从辅助磁贴处启动
             else if (appLaunchArguments.AppLaunchKind is AppLaunchKind.SecondaryTile)
             {
-                if (appLaunchArguments.SubParameters is not null && appLaunchArguments.SubParameters.Count >= 1)
+                if (appLaunchArguments.SubParameterList is not null && appLaunchArguments.SubParameterList.Count >= 1)
                 {
-                    if (appLaunchArguments.SubParameters[0] is "Home" && GetFrameContent() is not HomePage)
+                    if (appLaunchArguments.SubParameterList[0] is "Home" && GetFrameContent() is not HomePage)
                     {
                         NavigateTo(typeof(HomePage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "Store" && GetFrameContent() is not StorePage)
+                    else if (appLaunchArguments.SubParameterList[0] is "Store" && GetFrameContent() is not StorePage)
                     {
                         NavigateTo(typeof(StorePage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "AppUpdate" && GetFrameContent() is not AppUpdatePage)
+                    else if (appLaunchArguments.SubParameterList[0] is "AppUpdate" && GetFrameContent() is not AppUpdatePage)
                     {
                         NavigateTo(typeof(AppUpdatePage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "WinGet" && GetFrameContent() is not WinGetPage)
+                    else if (appLaunchArguments.SubParameterList[0] is "WinGet" && GetFrameContent() is not WinGetPage)
                     {
                         NavigateTo(typeof(WinGetPage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "AppManager" && GetFrameContent() is not AppManagerPage)
+                    else if (appLaunchArguments.SubParameterList[0] is "AppManager" && GetFrameContent() is not AppManagerPage)
                     {
                         NavigateTo(typeof(AppManagerPage));
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "Download" && GetFrameContent() is not DownloadPage)
+                    else if (appLaunchArguments.SubParameterList[0] is "Download" && GetFrameContent() is not DownloadPage)
                     {
                         NavigateTo(typeof(DownloadPage));
                     }
@@ -1149,22 +1149,22 @@ namespace GetStoreApp.Views.Windows
             // 从共享目标启动
             else if (appLaunchArguments.AppLaunchKind is AppLaunchKind.ShareTarget)
             {
-                if (appLaunchArguments.SubParameters is not null && appLaunchArguments.SubParameters.Count is 3)
+                if (appLaunchArguments.SubParameterList is not null && appLaunchArguments.SubParameterList.Count is 3)
                 {
                     if (GetFrameContent() is StorePage storePage)
                     {
-                        storePage.StoreSelector?.UpdateData(appLaunchArguments.SubParameters);
+                        storePage.StoreSelector?.UpdateData(appLaunchArguments.SubParameterList);
                     }
                     else
                     {
-                        NavigateTo(typeof(StorePage), appLaunchArguments.SubParameters);
+                        NavigateTo(typeof(StorePage), appLaunchArguments.SubParameterList);
                     }
                 }
             }
             // 从通知协议启动
             else if (appLaunchArguments.AppLaunchKind is AppLaunchKind.Protocol)
             {
-                if (appLaunchArguments.SubParameters is null)
+                if (appLaunchArguments.SubParameterList is null)
                 {
                     if (!isFirstLaunch && appLaunchArguments.IsLaunched)
                     {
@@ -1173,9 +1173,9 @@ namespace GetStoreApp.Views.Windows
                 }
                 else
                 {
-                    if (appLaunchArguments.SubParameters.Count > 0)
+                    if (appLaunchArguments.SubParameterList.Count > 0)
                     {
-                        if (appLaunchArguments.SubParameters[0] is "DownloadSettings")
+                        if (appLaunchArguments.SubParameterList[0] is "DownloadSettings")
                         {
                             if (GetFrameContent() is not SettingsPage)
                             {
@@ -1201,7 +1201,7 @@ namespace GetStoreApp.Views.Windows
                                 }
                             }
                         }
-                        else if (appLaunchArguments.SubParameters[0] is "AppInstallSettings")
+                        else if (appLaunchArguments.SubParameterList[0] is "AppInstallSettings")
                         {
                             if (GetFrameContent() is not SettingsPage)
                             {
@@ -1233,13 +1233,13 @@ namespace GetStoreApp.Views.Windows
             // 从 Toast 通知启动
             else if (appLaunchArguments.AppLaunchKind is AppLaunchKind.ToastNotification)
             {
-                if (appLaunchArguments.SubParameters is not null && appLaunchArguments.SubParameters.Count > 0)
+                if (appLaunchArguments.SubParameterList is not null && appLaunchArguments.SubParameterList.Count > 0)
                 {
-                    if (!isFirstLaunch && appLaunchArguments.IsLaunched && appLaunchArguments.SubParameters[0] is "OpenApp")
+                    if (!isFirstLaunch && appLaunchArguments.IsLaunched && appLaunchArguments.SubParameterList[0] is "OpenApp")
                     {
                         await ShowDialogAsync(new AppRunningDialog());
                     }
-                    else if (appLaunchArguments.SubParameters[0] is "ViewDownloadPage")
+                    else if (appLaunchArguments.SubParameterList[0] is "ViewDownloadPage")
                     {
                         if (GetFrameContent() is not DownloadPage)
                         {
@@ -1265,25 +1265,25 @@ namespace GetStoreApp.Views.Windows
             {
                 if (GetFrameContent() is StorePage storePage)
                 {
-                    storePage.StoreSelector?.UpdateData(appLaunchArguments.SubParameters);
+                    storePage.StoreSelector?.UpdateData(appLaunchArguments.SubParameterList);
                 }
                 else
                 {
-                    NavigateTo(typeof(StorePage), appLaunchArguments.SubParameters);
+                    NavigateTo(typeof(StorePage), appLaunchArguments.SubParameterList);
                 }
             }
             // 应用固定提示
             else if (appLaunchArguments.AppLaunchKind is AppLaunchKind.Pinner)
             {
-                if (appLaunchArguments.SubParameters is not null && appLaunchArguments.SubParameters.Count is 2)
+                if (appLaunchArguments.SubParameterList is not null && appLaunchArguments.SubParameterList.Count is 2)
                 {
-                    if (string.Equals(appLaunchArguments.SubParameters[0], nameof(SecondaryTile)))
+                    if (string.Equals(appLaunchArguments.SubParameterList[0], nameof(SecondaryTile)))
                     {
-                        await ShowNotificationAsync(new OperationResultNotificationTip(OperationKind.StartScreen, Convert.ToBoolean(appLaunchArguments.SubParameters[1])));
+                        await ShowNotificationAsync(new OperationResultNotificationTip(OperationKind.StartScreen, Convert.ToBoolean(appLaunchArguments.SubParameterList[1])));
                     }
-                    else if (string.Equals(appLaunchArguments.SubParameters[0], nameof(TaskbarManager)))
+                    else if (string.Equals(appLaunchArguments.SubParameterList[0], nameof(TaskbarManager)))
                     {
-                        await ShowNotificationAsync(new OperationResultNotificationTip(OperationKind.Taskbar, Convert.ToBoolean(appLaunchArguments.SubParameters[1])));
+                        await ShowNotificationAsync(new OperationResultNotificationTip(OperationKind.Taskbar, Convert.ToBoolean(appLaunchArguments.SubParameterList[1])));
                     }
                 }
             }

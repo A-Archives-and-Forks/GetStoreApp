@@ -140,7 +140,7 @@ namespace GetStoreApp.Views.Pages
             {
                 try
                 {
-                    if (await GetStorageFileListAsync([completed.FilePath]) is List<StorageFile> fileList && fileList.Count is not 0)
+                    if (await GetStorageFileListAsync([completed.FilePath]) is List<StorageFile> fileList && fileList.Count > 0)
                     {
                         bool copyResult = CopyPasteHelper.CopyFileToClipBoard(fileList);
                         await MainWindow.Current.ShowNotificationAsync(new CopyPasteMainNotificationTip(copyResult));
@@ -290,7 +290,10 @@ namespace GetStoreApp.Views.Pages
                     try
                     {
                         List<StorageFile> fileList = [await StorageFile.GetFileFromPathAsync(completed.FilePath)];
-                        ShowShareUI(fileList);
+                        if (fileList.Count > 0)
+                        {
+                            ShowShareUI(fileList);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -444,7 +447,7 @@ namespace GetStoreApp.Views.Pages
                         selectedFileList.Add(completedItem.FilePath);
                     }
 
-                    if (await GetStorageFileListAsync(selectedFileList) is List<StorageFile> selectedStorageFileList && selectedStorageFileList.Count is not 0)
+                    if (await GetStorageFileListAsync(selectedFileList) is List<StorageFile> selectedStorageFileList && selectedStorageFileList.Count > 0)
                     {
                         ShowShareUI(selectedStorageFileList);
                     }
@@ -478,9 +481,11 @@ namespace GetStoreApp.Views.Pages
                     selectedFileList.Add(completedItem.FilePath);
                 }
 
-                List<StorageFile> selectedStorageFileList = await GetStorageFileListAsync(selectedFileList);
-                bool copyResult = CopyPasteHelper.CopyFileToClipBoard(selectedStorageFileList);
-                await MainWindow.Current.ShowNotificationAsync(new CopyPasteMainNotificationTip(copyResult));
+                if (await GetStorageFileListAsync(selectedFileList) is List<StorageFile> selectedStorageFileList && selectedCompletedDataList.Count > 0)
+                {
+                    bool copyResult = CopyPasteHelper.CopyFileToClipBoard(selectedStorageFileList);
+                    await MainWindow.Current.ShowNotificationAsync(new CopyPasteMainNotificationTip(copyResult));
+                }
             }
         }
 
@@ -635,7 +640,7 @@ namespace GetStoreApp.Views.Pages
             {
                 packageDeploymentManager = PackageDeploymentManager.GetDefault();
                 DownloadStorageService.DownloadStorageSemaphoreSlim?.Wait();
-                return DownloadStorageService.GetDownloadData();
+                return DownloadStorageService.GetDownloadDataList();
             });
         }
 

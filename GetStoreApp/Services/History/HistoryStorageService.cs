@@ -60,7 +60,7 @@ namespace GetStoreApp.Services.History
         /// 获取查询链接历史记录数据
         /// </summary>
         [DynamicWindowsRuntimeCast(typeof(Windows.Storage.ApplicationDataCompositeValue))]
-        internal static List<HistoryModel> GetQueryLinksData()
+        internal static List<HistoryModel> GetQueryLinksDataList()
         {
             List<HistoryModel> queryLinksHistoryList = [];
             historyStorageLock.Enter();
@@ -91,7 +91,7 @@ namespace GetStoreApp.Services.History
             }
             catch (Exception e)
             {
-                LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(GetQueryLinksData), 1, e);
+                LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(GetQueryLinksDataList), 1, e);
             }
             finally
             {
@@ -106,7 +106,7 @@ namespace GetStoreApp.Services.History
         /// 获取搜索应用历史记录数据
         /// </summary>
         [DynamicWindowsRuntimeCast(typeof(Windows.Storage.ApplicationDataCompositeValue))]
-        internal static List<HistoryModel> GetSearchAppsData()
+        internal static List<HistoryModel> GetSearchAppsDataList()
         {
             List<HistoryModel> searchAppsHistoryList = [];
             historyStorageLock.Enter();
@@ -134,7 +134,7 @@ namespace GetStoreApp.Services.History
             }
             catch (Exception e)
             {
-                LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(GetSearchAppsData), 1, e);
+                LogService.WriteLog(LoggingLevel.Error, nameof(GetStoreApp), nameof(DownloadStorageService), nameof(GetSearchAppsDataList), 1, e);
             }
             finally
             {

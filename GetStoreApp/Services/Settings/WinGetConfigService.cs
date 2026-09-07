@@ -81,20 +81,25 @@ namespace GetStoreApp.Services.Settings
                         if (!isModified)
                         {
                             // 检查自定义数据源
-                            IReadOnlyList<PackageCatalogReference> packageCatalogReferenceList = packageManager.GetPackageCatalogs();
-                            List<string> packageCatalogReferenceNameList = [];
-                            for (int index = 0; index < packageCatalogReferenceList.Count; index++)
+                            if (packageManager.GetPackageCatalogs() is IReadOnlyList<PackageCatalogReference> packageCatalogReferenceList && packageCatalogReferenceList.Count > 0)
                             {
-                                packageCatalogReferenceNameList.Add(packageCatalogReferenceList[index].Info.Name);
-                            }
-
-                            // 保存检查完成后的数据
-                            foreach (string packageCatalogReferenceName in packageCatalogReferenceNameList)
-                            {
-                                if (string.Equals(winGetDataSourceName.Key, packageCatalogReferenceName) && !winGetDataSourceName.Value)
+                                List<string> packageCatalogReferenceNameList = [];
+                                for (int index = 0; index < packageCatalogReferenceList.Count; index++)
                                 {
-                                    winGetDataSourceContainer.Values[CurrentWinGetSource] = compositeValue;
-                                    break;
+                                    packageCatalogReferenceNameList.Add(packageCatalogReferenceList[index].Info.Name);
+                                }
+
+                                if (packageCatalogReferenceNameList.Count > 0)
+                                {
+                                    // 保存检查完成后的数据
+                                    foreach (string packageCatalogReferenceName in packageCatalogReferenceNameList)
+                                    {
+                                        if (string.Equals(winGetDataSourceName.Key, packageCatalogReferenceName) && !winGetDataSourceName.Value)
+                                        {
+                                            winGetDataSourceContainer.Values[CurrentWinGetSource] = compositeValue;
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }

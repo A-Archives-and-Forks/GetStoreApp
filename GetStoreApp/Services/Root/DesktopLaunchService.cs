@@ -95,7 +95,7 @@ namespace GetStoreApp.Services.Root
                 {
                     appLaunchArguments.AppLaunchKind = AppLaunchKind.Launch;
                     appLaunchArguments.IsLaunched = isLaunched;
-                    appLaunchArguments.SubParameters = [];
+                    appLaunchArguments.SubParameterList = [];
                 }
                 else if (argumentsList.Count is 1)
                 {
@@ -104,14 +104,14 @@ namespace GetStoreApp.Services.Root
                     {
                         appLaunchArguments.AppLaunchKind = AppLaunchKind.Launch;
                         appLaunchArguments.IsLaunched = isLaunched;
-                        appLaunchArguments.SubParameters = ["Restart"];
+                        appLaunchArguments.SubParameterList = ["Restart"];
                     }
                     // 带参数启动：只有一个参数，直接输入链接
                     else
                     {
                         appLaunchArguments.AppLaunchKind = AppLaunchKind.Console;
                         appLaunchArguments.IsLaunched = isLaunched;
-                        appLaunchArguments.SubParameters = ["-1", "-1", argumentsList[0]];
+                        appLaunchArguments.SubParameterList = ["-1", "-1", argumentsList[0]];
                     }
                 }
                 else if (argumentsList.Count >= 2)
@@ -139,7 +139,7 @@ namespace GetStoreApp.Services.Root
                             }
 
                             appLaunchArguments.IsLaunched = isLaunched;
-                            appLaunchArguments.SubParameters = argumentsList[1..];
+                            appLaunchArguments.SubParameterList = argumentsList[1..];
                         }
                     }
                     // 带参数启动：包含多个参数
@@ -155,7 +155,7 @@ namespace GetStoreApp.Services.Root
 
                         appLaunchArguments.AppLaunchKind = AppLaunchKind.Console;
                         appLaunchArguments.IsLaunched = isLaunched;
-                        appLaunchArguments.SubParameters = [Convert.ToString(typeNameIndex), Convert.ToString(channelNameIndex), string.IsNullOrEmpty(link) ? "PlaceHolderText" : argumentsList[5]];
+                        appLaunchArguments.SubParameterList = [Convert.ToString(typeNameIndex), Convert.ToString(channelNameIndex), string.IsNullOrEmpty(link) ? "PlaceHolderText" : argumentsList[5]];
                     }
                     else
                     {
@@ -181,7 +181,7 @@ namespace GetStoreApp.Services.Root
                     {
                         AppLaunchKind = AppLaunchKind.ShareTarget,
                         IsLaunched = isLaunched,
-                        SubParameters = ["-1", "-1", Convert.ToString(await shareOperation.Data.GetUriAsync())]
+                        SubParameterList = ["-1", "-1", Convert.ToString(await shareOperation.Data.GetUriAsync())]
                     };
 
                     SignalAppLaunchActivated(appLaunchArguments);
@@ -206,7 +206,7 @@ namespace GetStoreApp.Services.Root
 
                 if (protocolActivatedEventArgs.Data is ValueSet dataSet && dataSet.TryGetValue("Parameter", out object parameterObj))
                 {
-                    appLaunchArguments.SubParameters = [Convert.ToString(parameterObj)];
+                    appLaunchArguments.SubParameterList = [Convert.ToString(parameterObj)];
                 }
 
                 SignalAppLaunchActivated(appLaunchArguments);

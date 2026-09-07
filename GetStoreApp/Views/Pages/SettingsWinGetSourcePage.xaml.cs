@@ -295,10 +295,7 @@ namespace GetStoreApp.Views.Pages
             WinGetSourceInternalCollection.Clear();
             WinGetSourceCustomCollection.Clear();
 
-            List<WinGetSourceModel> winGetSourceInternalList = await GetWinGetSourceInternalListAsync();
-            List<WinGetSourceModel> winGetSourceCustomList = await GetWinGetSourceCustomListAsync();
-
-            if (winGetSourceInternalList is not null && winGetSourceInternalList.Count is not 0)
+            if (await GetWinGetSourceInternalListAsync() is List<WinGetSourceModel> winGetSourceInternalList && winGetSourceInternalList.Count > 0)
             {
                 foreach (WinGetSourceModel winGetSourceItem in winGetSourceInternalList)
                 {
@@ -306,7 +303,7 @@ namespace GetStoreApp.Views.Pages
                 }
             }
 
-            if (winGetSourceCustomList is not null && winGetSourceCustomList.Count is not 0)
+            if (await GetWinGetSourceCustomListAsync() is List<WinGetSourceModel> winGetSourceCustomList && winGetSourceCustomList.Count > 0)
             {
                 foreach (WinGetSourceModel winGetSourceItem in winGetSourceCustomList)
                 {
@@ -326,7 +323,6 @@ namespace GetStoreApp.Views.Pages
                 List<WinGetSourceModel> winGetSourceInternalList = [];
                 KeyValuePair<string, bool> winGetDataSourceName = WinGetConfigService.GetWinGetDataSourceName();
 
-                List<PackageCatalogReference> predefinedPackageCatalogReferenceList = [];
                 foreach (PredefinedPackageCatalog predefinedPackageCatalog in Enum.GetValues<PredefinedPackageCatalog>())
                 {
                     PackageCatalogReference packageCatalogReference = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
@@ -395,58 +391,59 @@ namespace GetStoreApp.Views.Pages
                 List<WinGetSourceModel> winGetSourceCustomList = [];
                 KeyValuePair<string, bool> winGetDataSourceName = WinGetConfigService.GetWinGetDataSourceName();
 
-                IReadOnlyList<PackageCatalogReference> packageCatalogReferenceList = packageManager.GetPackageCatalogs();
-
-                for (int index = 0; index < packageCatalogReferenceList.Count; index++)
+                if (packageManager.GetPackageCatalogs() is IReadOnlyList<PackageCatalogReference> packageCatalogReferenceList && packageCatalogReferenceList.Count > 0)
                 {
-                    PackageCatalogReference packageCatalogReference = packageCatalogReferenceList[index];
-
-                    PackageCatalogInformation packageCatalogInformation = new()
+                    for (int index = 0; index < packageCatalogReferenceList.Count; index++)
                     {
-                        Name = packageCatalogReference.Info.Name,
-                        Arguments = packageCatalogReference.Info.Argument,
-                        Explicit = packageCatalogReference.Info.Explicit,
-                        TrustLevel = packageCatalogReference.Info.TrustLevel,
-                        Id = packageCatalogReference.Info.Id,
-                        LastUpdateTime = packageCatalogReference.Info.LastUpdateTime,
-                        Origin = packageCatalogReference.Info.Origin,
-                        Type = packageCatalogReference.Info.Type,
-                        AcceptSourceAgreements = packageCatalogReference.AcceptSourceAgreements,
-                        AdditionalPackageCatalogArguments = packageCatalogReference.AdditionalPackageCatalogArguments,
-                        AuthenticationType = packageCatalogReference.AuthenticationInfo.AuthenticationType,
-                        AuthenticationAccount = packageCatalogReference.AuthenticationArguments is not null && !string.IsNullOrEmpty(packageCatalogReference.AuthenticationArguments.AuthenticationAccount) ? packageCatalogReference.AuthenticationArguments.AuthenticationAccount : string.Empty,
-                        PackageCatalogBackgroundUpdateInterval = packageCatalogReference.PackageCatalogBackgroundUpdateInterval,
-                    };
+                        PackageCatalogReference packageCatalogReference = packageCatalogReferenceList[index];
 
-                    WinGetSourceModel winGetSource = new()
-                    {
-                        IsOperating = false,
-                        IsSelected = Equals(winGetDataSourceName, KeyValuePair.Create(packageCatalogInformation.Name, false)),
-                        PackageCatalogInformation = packageCatalogInformation,
-                        Name = packageCatalogInformation.Name,
-                        Arguments = string.IsNullOrEmpty(packageCatalogInformation.Arguments) ? NoneString : packageCatalogReference.Info.Argument,
-                        Explicit = packageCatalogInformation.Explicit ? YesString : NoString,
-                        TrustLevel = packageCatalogInformation.TrustLevel is PackageCatalogTrustLevel.Trusted ? TrustedString : DistrustedString,
-                        SourceId = packageCatalogInformation.Id,
-                        LastUpdateTime = packageCatalogInformation.LastUpdateTime.ToString("yyyy/MM/dd HH:mm"),
-                        Origin = packageCatalogInformation.Origin is PackageCatalogOrigin.Predefined ? PredefinedString : UserString,
-                        Type = packageCatalogInformation.Type,
-                        AcceptSourceAgreements = packageCatalogInformation.AcceptSourceAgreements ? YesString : NoString,
-                        AuthenticationType = packageCatalogInformation.AuthenticationType switch
+                        PackageCatalogInformation packageCatalogInformation = new()
                         {
-                            AuthenticationType.None => NoneString,
-                            AuthenticationType.Unknown => NotAvailableString,
-                            AuthenticationType.MicrosoftEntraId => MicrosoftEntraIdString,
-                            AuthenticationType.MicrosoftEntraIdForAzureBlobStorage => MicrosoftEntraIdForAzureBlobStorageString,
-                            _ => NotAvailableString
-                        },
-                        AdditionalPackageCatalogArguments = string.IsNullOrEmpty(packageCatalogInformation.AdditionalPackageCatalogArguments) ? NoneString : packageCatalogInformation.AdditionalPackageCatalogArguments,
-                        AuthenticationAccount = string.IsNullOrEmpty(packageCatalogInformation.AuthenticationAccount) ? NoneString : packageCatalogInformation.AuthenticationAccount,
-                        PackageCatalogBackgroundUpdateInterval = Convert.ToString(packageCatalogInformation.PackageCatalogBackgroundUpdateInterval),
-                        IsInternal = false
-                    };
+                            Name = packageCatalogReference.Info.Name,
+                            Arguments = packageCatalogReference.Info.Argument,
+                            Explicit = packageCatalogReference.Info.Explicit,
+                            TrustLevel = packageCatalogReference.Info.TrustLevel,
+                            Id = packageCatalogReference.Info.Id,
+                            LastUpdateTime = packageCatalogReference.Info.LastUpdateTime,
+                            Origin = packageCatalogReference.Info.Origin,
+                            Type = packageCatalogReference.Info.Type,
+                            AcceptSourceAgreements = packageCatalogReference.AcceptSourceAgreements,
+                            AdditionalPackageCatalogArguments = packageCatalogReference.AdditionalPackageCatalogArguments,
+                            AuthenticationType = packageCatalogReference.AuthenticationInfo.AuthenticationType,
+                            AuthenticationAccount = packageCatalogReference.AuthenticationArguments is not null && !string.IsNullOrEmpty(packageCatalogReference.AuthenticationArguments.AuthenticationAccount) ? packageCatalogReference.AuthenticationArguments.AuthenticationAccount : string.Empty,
+                            PackageCatalogBackgroundUpdateInterval = packageCatalogReference.PackageCatalogBackgroundUpdateInterval,
+                        };
 
-                    winGetSourceCustomList.Add(winGetSource);
+                        WinGetSourceModel winGetSource = new()
+                        {
+                            IsOperating = false,
+                            IsSelected = Equals(winGetDataSourceName, KeyValuePair.Create(packageCatalogInformation.Name, false)),
+                            PackageCatalogInformation = packageCatalogInformation,
+                            Name = packageCatalogInformation.Name,
+                            Arguments = string.IsNullOrEmpty(packageCatalogInformation.Arguments) ? NoneString : packageCatalogReference.Info.Argument,
+                            Explicit = packageCatalogInformation.Explicit ? YesString : NoString,
+                            TrustLevel = packageCatalogInformation.TrustLevel is PackageCatalogTrustLevel.Trusted ? TrustedString : DistrustedString,
+                            SourceId = packageCatalogInformation.Id,
+                            LastUpdateTime = packageCatalogInformation.LastUpdateTime.ToString("yyyy/MM/dd HH:mm"),
+                            Origin = packageCatalogInformation.Origin is PackageCatalogOrigin.Predefined ? PredefinedString : UserString,
+                            Type = packageCatalogInformation.Type,
+                            AcceptSourceAgreements = packageCatalogInformation.AcceptSourceAgreements ? YesString : NoString,
+                            AuthenticationType = packageCatalogInformation.AuthenticationType switch
+                            {
+                                AuthenticationType.None => NoneString,
+                                AuthenticationType.Unknown => NotAvailableString,
+                                AuthenticationType.MicrosoftEntraId => MicrosoftEntraIdString,
+                                AuthenticationType.MicrosoftEntraIdForAzureBlobStorage => MicrosoftEntraIdForAzureBlobStorageString,
+                                _ => NotAvailableString
+                            },
+                            AdditionalPackageCatalogArguments = string.IsNullOrEmpty(packageCatalogInformation.AdditionalPackageCatalogArguments) ? NoneString : packageCatalogInformation.AdditionalPackageCatalogArguments,
+                            AuthenticationAccount = string.IsNullOrEmpty(packageCatalogInformation.AuthenticationAccount) ? NoneString : packageCatalogInformation.AuthenticationAccount,
+                            PackageCatalogBackgroundUpdateInterval = Convert.ToString(packageCatalogInformation.PackageCatalogBackgroundUpdateInterval),
+                            IsInternal = false
+                        };
+
+                        winGetSourceCustomList.Add(winGetSource);
+                    }
                 }
 
                 return winGetSourceCustomList;

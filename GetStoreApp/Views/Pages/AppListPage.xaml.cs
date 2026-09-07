@@ -728,8 +728,7 @@ namespace GetStoreApp.Views.Pages
             {
                 try
                 {
-                    IReadOnlyList<AppListEntry> appListEntryList = package.GetAppListEntries();
-                    if (appListEntryList.Count > 0)
+                    if (package.GetAppListEntries() is IReadOnlyList<AppListEntry> appListEntryList && appListEntryList.Count > 0)
                     {
                         await appListEntryList[0].LaunchAsync();
                     }
@@ -1420,17 +1419,19 @@ namespace GetStoreApp.Views.Pages
 
                 try
                 {
-                    IReadOnlyList<AppListEntry> appListEntriesList = package.Package.GetAppListEntries();
-                    for (int index = 0; index < appListEntriesList.Count; index++)
+                    if (package.Package.GetAppListEntries() is IReadOnlyList<AppListEntry> appListEntriesList && appListEntriesList.Count > 0)
                     {
-                        appInformation.AppListEntryList.Add(new()
+                        for (int index = 0; index < appListEntriesList.Count; index++)
                         {
-                            DisplayName = appListEntriesList[index].DisplayInfo.DisplayName,
-                            Description = appListEntriesList[index].DisplayInfo.Description,
-                            AppUserModelId = appListEntriesList[index].AppUserModelId,
-                            AppListEntry = appListEntriesList[index],
-                            PackageFullName = package.Package.Id.FullName
-                        });
+                            appInformation.AppListEntryList.Add(new()
+                            {
+                                DisplayName = appListEntriesList[index].DisplayInfo.DisplayName,
+                                Description = appListEntriesList[index].DisplayInfo.Description,
+                                AppUserModelId = appListEntriesList[index].AppUserModelId,
+                                AppListEntry = appListEntriesList[index],
+                                PackageFullName = package.Package.Id.FullName
+                            });
+                        }
                     }
                 }
                 catch (Exception e)
@@ -1440,9 +1441,7 @@ namespace GetStoreApp.Views.Pages
 
                 try
                 {
-                    IReadOnlyList<Package> dependencyList = package.Package.Dependencies;
-
-                    if (dependencyList.Count > 0)
+                    if (package.Package.Dependencies is IReadOnlyList<Package> dependencyList && dependencyList.Count > 0)
                     {
                         for (int index = 0; index < dependencyList.Count; index++)
                         {
@@ -1645,7 +1644,7 @@ namespace GetStoreApp.Views.Pages
         /// </summary>
         private void UpdateFilterPackageData(List<PackageModel> filterSortPackageList)
         {
-            if (filterSortPackageList is not null && filterSortPackageList.Count is not 0)
+            if (filterSortPackageList is not null && filterSortPackageList.Count > 0)
             {
                 foreach (PackageModel packageItem in filterSortPackageList)
                 {

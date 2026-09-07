@@ -681,25 +681,27 @@ namespace GetStoreApp.Views.Pages
             {
                 try
                 {
-                    List<string> copyStringList = [];
-                    copyStringList.Add(string.Format("{0}:\t{1}", AppDisplayNameString, appInformation.DisplayName));
-                    copyStringList.Add(string.Format("{0}:\t{1}", PackageFamilyNameString, appInformation.PackageFamilyName));
-                    copyStringList.Add(string.Format("{0}:\t{1}", PackageFullNameString, appInformation.PackageFullName));
-                    copyStringList.Add(string.Format("{0}:\t{1}", AppDescriptionString, appInformation.Description));
-                    copyStringList.Add(string.Format("{0}:\t{1}", PublisherDisplayNameString, appInformation.PublisherDisplayName));
-                    copyStringList.Add(string.Format("{0}:\t{1}", PublisherIdString, appInformation.PublisherId));
-                    copyStringList.Add(string.Format("{0}:\t{1}", VersionString, appInformation.Version));
-                    copyStringList.Add(string.Format("{0}:\t{1}", InstalledDateString, appInformation.InstallDate));
-                    copyStringList.Add(string.Format("{0}:\t{1}", ArchitectureString, appInformation.Architecture));
-                    copyStringList.Add(string.Format("{0}:\t{1}", SignatureKindString, appInformation.SignatureKind));
-                    copyStringList.Add(string.Format("{0}:\t{1}", ResourceIdString, appInformation.ResourceId));
-                    copyStringList.Add(string.Format("{0}:\t{1}", IsBundleString, appInformation.IsBundle));
-                    copyStringList.Add(string.Format("{0}:\t{1}", IsDevelopmentModeString, appInformation.IsDevelopmentMode));
-                    copyStringList.Add(string.Format("{0}:\t{1}", IsFrameworkString, appInformation.IsFramework));
-                    copyStringList.Add(string.Format("{0}:\t{1}", IsOptionalString, appInformation.IsOptional));
-                    copyStringList.Add(string.Format("{0}:\t{1}", IsResourcePackageString, appInformation.IsResourcePackage));
-                    copyStringList.Add(string.Format("{0}:\t{1}", IsStubString, appInformation.IsStub));
-                    copyStringList.Add(string.Format("{0}:\t{1}", VerifyIsOKString, appInformation.VerifyIsOK));
+                    List<string> copyStringList =
+                    [
+                        string.Format("{0}:\t{1}", AppDisplayNameString, appInformation.DisplayName),
+                        string.Format("{0}:\t{1}", PackageFamilyNameString, appInformation.PackageFamilyName),
+                        string.Format("{0}:\t{1}", PackageFullNameString, appInformation.PackageFullName),
+                        string.Format("{0}:\t{1}", AppDescriptionString, appInformation.Description),
+                        string.Format("{0}:\t{1}", PublisherDisplayNameString, appInformation.PublisherDisplayName),
+                        string.Format("{0}:\t{1}", PublisherIdString, appInformation.PublisherId),
+                        string.Format("{0}:\t{1}", VersionString, appInformation.Version),
+                        string.Format("{0}:\t{1}", InstalledDateString, appInformation.InstallDate),
+                        string.Format("{0}:\t{1}", ArchitectureString, appInformation.Architecture),
+                        string.Format("{0}:\t{1}", SignatureKindString, appInformation.SignatureKind),
+                        string.Format("{0}:\t{1}", ResourceIdString, appInformation.ResourceId),
+                        string.Format("{0}:\t{1}", IsBundleString, appInformation.IsBundle),
+                        string.Format("{0}:\t{1}", IsDevelopmentModeString, appInformation.IsDevelopmentMode),
+                        string.Format("{0}:\t{1}", IsFrameworkString, appInformation.IsFramework),
+                        string.Format("{0}:\t{1}", IsOptionalString, appInformation.IsOptional),
+                        string.Format("{0}:\t{1}", IsResourcePackageString, appInformation.IsResourcePackage),
+                        string.Format("{0}:\t{1}", IsStubString, appInformation.IsStub),
+                        string.Format("{0}:\t{1}", VerifyIsOKString, appInformation.VerifyIsOK)
+                    ];
                     return string.Join(Environment.NewLine, copyStringList);
                 }
                 catch (Exception e)
